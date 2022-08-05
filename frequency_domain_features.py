@@ -3,7 +3,6 @@
 import matplotlib.pyplot as plt
 import pypianoroll
 import numpy as np
-#from libfmp import *
 import libfmp.c6
 import random
 from scipy import signal
@@ -40,7 +39,7 @@ def multitrack_to_score(filename, Fs_frame, pypianoroll_flag = False):
     """
     Given a filename of a midi file, it returns a matrix version of the musical score
     """
-
+    H = Fs/Fs_frame
     if(pypianoroll_flag==True):
         beat_resolution = 4  #n° of time steps in a quarter note (16th-note allowed)
         
