@@ -1,24 +1,16 @@
-import music21
+
 import pretty_midi
-import matplotlib.pyplot as plt
-import os
 import pypianoroll
 import numpy as np
-from libfmp import *
-import libfmp.c6
-import pandas as pd
-import music21 as m21
+
 import random
-from scipy import signal
-import seaborn as sns
-import statistics
-from scipy import stats as s
-from scipy.interpolate import interp1d
-from scipy import signal
-from scipy.ndimage import filters
-import IPython.display as ipd
+
+
 import yaml
 from yaml.loader import SafeLoader
+
+from utils import save_txt_list, get_start_end_frame
+from plot_functions import plot_curve_pitches
 
 
 ###############################################
@@ -139,7 +131,7 @@ def postprocess_motiv_harmony(input_list,
     #list used to take track of the deleted notes
     notes_indices_list = list(range(0,len_input_list))
 
-    pitch_list = list(map(lambda x:x[2], midi_list))
+    pitch_list = list(map(lambda x:x[2], input_list))
     avg_pitch = np.round(np.average(pitch_list))
     std_pitch = np.round(np.std(pitch_list))
     low_limit_pitch = int(avg_pitch-std_pitch)
@@ -200,7 +192,7 @@ def postprocess_motiv_harmony(input_list,
 
 
 
-def mono_to_motiv_harmony(input_midi_file, Fs_msp):
+def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
 
     """
     Given a 1-track midi file, it splits it into melody and chords
@@ -315,7 +307,7 @@ def midi_list_to_frames_list(input_midi_list, Fs_msp):
     return frames_list
 
 
-def multi2mono_midifile(multitrack):
+def multi2mono_midifile(multitrack, save_path=""):
 
     """
     Given a multi-track pypiano object, it returns its mono-track version
