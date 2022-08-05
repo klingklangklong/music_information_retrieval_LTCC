@@ -214,7 +214,7 @@ def compute_spectral_flux(chroma, Fs_frame, decaying_flag=False, decaying_steps=
 
     #conversion features -> time (deprecated)
     x_axis_features = list(range(0,len(spectral_flux)))
-    x_axis_time = convert_feature_to_time_domain(x_axis_features)
+    x_axis_time = convert_feature_to_time_domain(x_axis_features, Fs_frame)
 
 
     #peaks calculation
