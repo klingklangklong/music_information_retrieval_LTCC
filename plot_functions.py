@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
-from utils import convert_feature_to_time_domain, midi_to_list
 import pretty_midi
 import numpy as np
 import seaborn as sns
 import yaml
 from yaml.loader import SafeLoader
+import pandas as pd
+from utils import get_2Dpitch_curves, convert_feature_to_time_domain, midi_to_list
 
 ###############################################
 #Load variables from .yml file
@@ -13,14 +14,10 @@ yaml_path = "global.yaml"
 with open(yaml_path) as f: # load yaml
     global_var = yaml.load(f, Loader=SafeLoader)
 
-Fs = Fs_midi = Fs_symb = global_var["Fs"]
 Fs_msp = global_var["Fs_msp"]
 n_pitches = global_var["n_pitches"]
 lowest_pitch = global_var["lowest_pitch"]
-num_midi_notes = global_var["num_midi_notes"]
-num_steps = global_var["num_steps"]
-keys = global_var["keys"]
-keys_ordered = global_var["keys_ordered"]
+
 
 ###############################################
 
@@ -47,7 +44,7 @@ def plot_2Darray(array, figsize=(16,8), cmap='gray_r', xlabel="", ylabel="", yti
     x_axis_time = convert_feature_to_time_domain(x_axis_features)
 
     #print tick every 10 seconds
-    time_step = int(10*Fs_frame)
+    time_step = int(10*Fs_msp)
     plt.xticks(x_axis_features[0::time_step], x_axis_time[0::time_step])
 
     if yticks:
