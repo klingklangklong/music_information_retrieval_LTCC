@@ -74,6 +74,7 @@ def multitrack_to_score(filename, Fs_frame, pypianoroll_flag = False):
 
 
     plot_2Darray(output_score,
+                 Fs_frame,
                  xlabel="Time[s]",
                  ylabel="MIDI Pitch")
 
@@ -124,7 +125,7 @@ def normalize_feature_sequence(X, norm=2, threshold=0.0001, v=None):
     return X_norm
 
 
-def get_midi_chroma(score):
+def get_midi_chroma(score, Fs_frame):
     """
     Score -> chroma
     """
@@ -139,6 +140,7 @@ def get_midi_chroma(score):
     chroma_midi_norm = normalize_feature_sequence(chroma_midi, norm=2, threshold=threshold)
 
     plot_2Darray(chroma_midi_norm,
+                 Fs_frame,
                  xlabel = "Time [s]",
                  ylabel = "Pitch",
                  yticks = keys)

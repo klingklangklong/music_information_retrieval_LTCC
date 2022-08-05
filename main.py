@@ -34,7 +34,6 @@ Fs_frame=Fs/H
 
 
 
-
 def music_information_retrieval_MIDI(file_path):
 
     """
@@ -53,7 +52,7 @@ def music_information_retrieval_MIDI(file_path):
 
     score = multitrack_to_score(file_path, Fs_frame = Fs_frame, pypianoroll_flag=False)
 
-    chroma = get_midi_chroma(score)
+    chroma = get_midi_chroma(score, Fs_frame)
 
     spectral_flux = compute_spectral_flux(chroma, Fs_frame=Fs_frame, show_peaks=False)
 

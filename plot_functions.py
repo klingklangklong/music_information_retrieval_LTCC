@@ -31,7 +31,7 @@ def plot_1Darray(x_axis, y_axis, figsize = (16,8), xlabel="", ylabel=""):
     #ax.plot(x_axis, y_axis)
 
 
-def plot_2Darray(array, figsize=(16,8), cmap='gray_r', xlabel="", ylabel="", yticks =""):
+def plot_2Darray(array, Fs_frame, figsize=(16,8), cmap='gray_r', xlabel="", ylabel="", yticks =""):
     fig,ax = plt.subplots(1,1,figsize = figsize, dpi=72)
 
     im = ax.imshow(array,
@@ -41,7 +41,7 @@ def plot_2Darray(array, figsize=(16,8), cmap='gray_r', xlabel="", ylabel="", yti
     
 
     x_axis_features = list(range(0,array.shape[1]))
-    x_axis_time = convert_feature_to_time_domain(x_axis_features)
+    x_axis_time = convert_feature_to_time_domain(x_axis_features, Fs_frame)
 
     #print tick every 10 seconds
     time_step = int(10*Fs_msp)

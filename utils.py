@@ -122,7 +122,7 @@ def get_frequency_registers(pitches):
 
 
 
-def convert_feature_to_time_domain(input_list):
+def convert_feature_to_time_domain(input_list, Fs_frame):
     output_list = [x / Fs_frame for x in input_list]
     return output_list
 
