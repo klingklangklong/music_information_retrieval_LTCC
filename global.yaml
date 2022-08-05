@@ -1,0 +1,15 @@
+# melody generation setup
+Fs: 22050
+Fs_msp: 10
+num_steps: 100
+
+n_pitches: 72
+lowest_pitch: 24
+num_midi_notes: 128
+
+#num frames for most played notes
+num_steps: 100
+
+
+keys : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb','G', 'Ab', 'A', 'Bb', 'B']
+keys_ordered : ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb','G', 'Ab']
