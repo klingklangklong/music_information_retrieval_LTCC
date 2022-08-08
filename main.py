@@ -3,12 +3,11 @@ import os
 from utils import midi_to_list
 from frequency_domain_features import multitrack_to_score, get_midi_chroma, compute_spectral_flux
 from motiv_harmony_separation import split_motiv_harmony
-#from harmony_generation import *
 from musical_domain_features import get_harmony_info, get_info_from_midi_list, retrieve_tracks_info
-#from triads_detection import *
+
+
+
 #Load variables from .yml file
-
-
 import yaml
 from yaml.loader import SafeLoader
 
@@ -68,6 +67,8 @@ if __name__ == "__main__":
 
     print(file_path)
     music_information_retrieval_MIDI(file_path)
+
+    
 
 
     

@@ -1,4 +1,5 @@
 import pretty_midi
+import os
 import numpy as np
 import pandas as pd
 import yaml
@@ -301,13 +302,15 @@ def get_2Dpitch_curves(track_midi_list):
 def write_harmony_file(input_triads,
                        expanded_main_notes_list,
                        input_harmony,
-                       name_file = ""):
+                       name_file = "",
+                       output_folder = ""):
     
     """
         Given a list of triads, it writes the triads and the harmony detected
         only in the time frame where we have a detected triad
     """
-    file = open(name_file, 'w')
+    filename = os.path.join(output_folder, name_file)
+    file = open(filename, 'w')
 
 
     for i in range(len(input_triads)):
@@ -324,7 +327,7 @@ def write_harmony_file(input_triads,
             file.write("\nFrame " + str(i).zfill(2) +
                 " )  Pad note: " +  str(keys[expanded_main_notes_list[i]%12]) +
                 " || Chosen triad : " + str(midi_to_chroma_list(input_triads[i])) +
-                " || Most played notes: " + str(midi_to_chroma_list(detected_harmony[i])) )
+                " || Most played notes: " + str(midi_to_chroma_list(input_harmony[i])) )
 
     file.close()
 
@@ -334,7 +337,8 @@ def write_harmony_file(input_triads,
 
 def save_txt_list(values, filename="out.txt",  save_path=""):
     
-    filename = save_path + "/" + filename
+    filename = os.path.join(save_path, filename)
+
     file = open(filename, 'w')
 
 
@@ -350,7 +354,7 @@ def save_txt_list(values, filename="out.txt",  save_path=""):
 
 def save_txt_array(times, values, filename="out.txt", save_path=""):
 
-    filename = save_path + "/" + filename   
+    filename = os.path.join(save_path, filename) 
     
     file = open(filename, 'w')
 
@@ -367,7 +371,7 @@ def save_txt_array(times, values, filename="out.txt", save_path=""):
 
 def save_txt_2Darray(values, filename="out.txt", save_path=""):
 
-    filename = save_path + "/" + filename 
+    filename = os.path.join(save_path, filename)
     file = open(filename, 'w')
 
     for i, value in enumerate(values):

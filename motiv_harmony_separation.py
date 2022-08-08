@@ -34,23 +34,6 @@ keys_ordered = global_var["keys_ordered"]
 
 
 
-#Load variables from .yml file
-
-yaml_path = "global.yaml"
-with open(yaml_path) as f: # load yaml
-    global_var = yaml.load(f, Loader=SafeLoader)
-
-Fs = Fs_midi = Fs_symb = global_var["Fs"]
-Fs_msp = global_var["Fs_msp"]
-n_pitches = global_var["n_pitches"]
-lowest_pitch = global_var["lowest_pitch"]
-num_midi_notes = global_var["num_midi_notes"]
-num_steps = global_var["num_steps"]
-keys = global_var["keys"]
-keys_ordered = global_var["keys_ordered"]
-
-
-
 
 def select_note_from_group(group, logic_type):
     """
