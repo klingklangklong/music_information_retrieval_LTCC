@@ -2,7 +2,8 @@
 Fs: 22050
 Fs_msp: 10
 num_steps: 100
-
+Fs_motiv_extraction: 50
+Fs_feature_motiv_extraction: 10
 n_pitches: 72
 lowest_pitch: 24
 num_midi_notes: 128

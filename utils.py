@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from yaml.loader import SafeLoader
+import pypianoroll
 
 yaml_path = "global.yaml"
 with open(yaml_path) as f: # load yaml
@@ -382,3 +383,79 @@ def save_txt_2Darray(values, filename="out.txt", save_path=""):
 
     file.close()
     return
+
+
+def list_to_pitch_activations(note_list, num_frames, frame_rate):
+    
+    'The parameter peakheight_scalefactor was taken from the function "midird4_to_pitchOnsetPeaks" '
+    
+    offset = 1
+    P = np.zeros((128, num_frames))
+
+    for l in note_list:
+        
+        start_frame = max(0, int(l[0] * frame_rate))  
+        end_frame = min(num_frames, int(l[1] * frame_rate) ) + offset  ##Original +1. Try +2 to align to the maltab one
+        P[int(l[2]), start_frame:end_frame] = l[3]         
+        
+    return P
+
+
+def multitrack_to_score(filename, Fs, Fs_frame, n_pitches, lowest_pitch, H):
+    """
+    Given a filename of a midi file, it returns a matrix version of the musical score
+    """
+
+    pypianoroll_algorithm_flag = False
+
+
+    if (pypianoroll_algorithm_flag==True):
+        beat_resolution = 4  #n° of time steps in a quarter note (16th-note allowed)
+        #beat_resolution = 24  #n° of time steps in a quarter note (16th-note allowed)
+
+
+        multitrack  = pypianoroll.read(filename, resolution=beat_resolution)   
+
+        n_tracks = len(multitrack.tracks)
+        n_timesteps = multitrack[0].pianoroll.shape[0]
+        piano_roll_shape = (n_timesteps, n_pitches)
+
+        output_score = np.zeros(shape = piano_roll_shape)
+
+        i=0
+        while(i<n_tracks):
+            print(multitrack.tracks[i].pianoroll.shape)
+            output_score[:,:] += multitrack.tracks[i].pianoroll[:,lowest_pitch:lowest_pitch + n_pitches]
+            i+=1
+
+        output_score = output_score.T
+
+    else:
+        
+        midi_list = midi_to_list(filename)
+        dur_symb = midi_list[-1][1]    ##release of the last note = dur midi file
+        print("time duration: ", dur_symb)
+        print("Fs: ", Fs)
+        len_symb = int(np.ceil(dur_symb * Fs))    #n samples with that Fs
+        print("len symb: ", len_symb)
+        num_features = int(len_symb / H)   #n° features
+        print("n features: ", num_features)
+
+        output_score_128_pitches = list_to_pitch_activations(midi_list, num_features, Fs_frame)
+
+        output_score = np.zeros((n_pitches, num_features))
+        output_score[:,:] = output_score_128_pitches[lowest_pitch:lowest_pitch + n_pitches, :]
+        
+    print(output_score.shape)
+    
+    return output_score
+
+
+def find_index_in_array(value, input_array):
+
+    for i, elem in enumerate(input_array):
+        if(elem == value):
+            #print("index: ", i)
+            found_idx = i
+
+    return found_idx

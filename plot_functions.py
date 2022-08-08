@@ -31,7 +31,7 @@ def plot_1Darray(x_axis, y_axis, figsize = (16,8), xlabel="", ylabel=""):
     #ax.plot(x_axis, y_axis)
 
 
-def plot_2Darray(array, Fs_frame, figsize=(16,8), cmap='gray_r', xlabel="", ylabel="", yticks =""):
+def plot_2Darray(array, Fs_frame, figsize=(16,8), cmap='gray_r', xlabel="", ylabel="", yticks ="", title="",):
     fig,ax = plt.subplots(1,1,figsize = figsize, dpi=72)
 
     im = ax.imshow(array,
@@ -55,6 +55,32 @@ def plot_2Darray(array, Fs_frame, figsize=(16,8), cmap='gray_r', xlabel="", ylab
     plt.ylabel(ylabel)
     plt.colorbar(im)
     plt.show()
+
+
+#def plot_2Darray(array, 
+#                 figsize=(10,4),
+#                 cmap='gray_r',
+#                 title="",
+#                 xlabel="",
+#                 ylabel=""):
+#    
+#    fig,ax = plt.subplots(1,1,figsize = figsize, dpi=72)
+#
+#    im = ax.imshow(array,
+#        cmap=cmap,
+#        aspect='auto',
+#        origin = 'lower')
+#    
+#
+#
+#    plt.title(title)
+#
+#    #way to disable the bars
+#    plt.xticks([])
+#    plt.yticks([])
+#    #plt.colorbar(im)
+#
+#    plt.show()
 
 
 

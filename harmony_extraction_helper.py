@@ -88,7 +88,7 @@ def get_triad_from_notes(midi_note,
 
 
 
-def harmony_to_filtered_triads(detected_harmony, expanded_main_notes_list, output_folder=""):
+def harmony_to_filtered_triads(detected_harmony, expanded_main_notes_list, output_folder=''):
     """
         Given a harmony (list of most played notes), the function finds the triads for each time frame following these rules:
         1) For each time frame, we get the major and minor triads for each of the detected notes.
@@ -309,7 +309,7 @@ def invert_and_filter_triads(input_list_triads,
 
     """
 
-    file = open("inverted filtered triads.txt", 'w')
+    #file = open("inverted filtered triads.txt", 'w')
 
     ordered_list_triads = []
     previous_triad = []
