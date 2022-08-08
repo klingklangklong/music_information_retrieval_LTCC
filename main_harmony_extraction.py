@@ -45,7 +45,7 @@ def triads_list_extractions(file_path):
     #get the triads
     found_triads = harmony_to_filtered_triads(detected_harmony, 
                                               expanded_main_notes_list,
-                                              output_folder)     
+                                              output_folder=output_folder)     
 
 
     #get one triad per frame

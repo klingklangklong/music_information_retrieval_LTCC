@@ -1,7 +1,7 @@
-
 import pretty_midi
 import pypianoroll
 import numpy as np
+import os
 
 import random
 
@@ -118,7 +118,7 @@ def postprocess_motiv_harmony(input_list,
     avg_pitch = np.round(np.average(pitch_list))
     std_pitch = np.round(np.std(pitch_list))
     low_limit_pitch = int(avg_pitch-std_pitch)
-    print(low_limit_pitch)
+    #print(low_limit_pitch)
 
 
 
@@ -230,7 +230,7 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
     #midi_list -> midi_frame
     #time -> frame
     #ToDo: function!!
-    print("motiv list: ", motiv_list)
+    #print("motiv list: ", motiv_list)
     frames_list = midi_list_to_frames_list(motiv_list, Fs_msp)
 
     save_txt_list(frames_list, filename = "melody.txt")
@@ -257,15 +257,21 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
 
     save_flag = True
 
+    out_path_file = os.path.join(save_path,"motiv.mid")
+
+
+
     #save melody and harmony separately
     if(save_flag):
         melody_midi = pretty_midi.PrettyMIDI()
         melody_midi.instruments.append(melody)
-        melody_midi.write(save_path + "/" + "motiv.mid")
+        out_path_file = os.path.join(save_path,"motiv.mid")
+        melody_midi.write(out_path_file)
 
         harmony_midi = pretty_midi.PrettyMIDI()
         harmony_midi.instruments.append(harmony)
-        harmony_midi.write(save_path + "/" + "harmony.mid")
+        out_path_file = os.path.join(save_path,"harmony.mid")
+        harmony_midi.write(out_path_file)
 
     out_midi.instruments.append(melody)
     out_midi.instruments.append(harmony)
@@ -322,26 +328,34 @@ def multi2mono_midifile(multitrack, save_path=""):
     multitrack.tracks = [mono_track]
 
     #convert pypianoroll -> midi 
-    out_filename = "mono.midi" 
-    multitrack.write(save_path + "/" + out_filename) 
-    midi_data = pretty_midi.PrettyMIDI(save_path + "/" + out_filename)
+    out_filename = "mono.mid" 
+    out_path = os.path.join(save_path, out_filename)
+    multitrack.write(out_path) 
+    midi_data = pretty_midi.PrettyMIDI(out_path)
 
     return midi_data
 
 
-def split_motiv_harmony(filename):
+def split_motiv_harmony(filename, output_folder):
+    
+    """
+    Given a midifile. this fucntion creates a file with 2 tracks, one for the harmony and one for the motiv
+    """
+
 
     #load pypianoroll
     multitrack  = pypianoroll.read(filename)   
 
     #compress all tracks into a single score
-    mono_midi = multi2mono_midifile(multitrack)
+    mono_midi = multi2mono_midifile(multitrack, save_path=output_folder)
 
     #split score into motiv and harmony
-    out_midi = mono_to_motiv_harmony(mono_midi, Fs_msp=10)
+    out_midi = mono_to_motiv_harmony(mono_midi, Fs_msp=10, save_path=output_folder)
 
+    
     #save
-    out_midi.write("split.mid")
+    outpath_split_midifile = os.path.join(output_folder, "motiv_harmony_split.mid")
+    out_midi.write(outpath_split_midifile)
 
     #plot
-    plot_curve_pitches("split.mid")
+    plot_curve_pitches(outpath_split_midifile)
