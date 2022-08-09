@@ -20,7 +20,7 @@ input_filename = args["input_filename"]
 input_folder = args["input_folder"]
 output_folder = args["output_folder"]
 input_name = input_filename[:-4]
-print(input_name)
+output_folder = os.path.join(output_folder,input_name)
 
 
 #Load variables from .yml file

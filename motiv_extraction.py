@@ -2,6 +2,8 @@ import os
 import numpy as np
 import libfmp.c4
 import libfmp.b
+import sys
+sys.path.append('scripts')
 
 from utils import midi_to_list, multitrack_to_score
 from frequency_domain_features import get_midi_chroma

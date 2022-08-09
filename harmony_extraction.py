@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append('scripts')
 import pretty_midi
 from utils import midi_to_list
 import argparse
@@ -17,7 +19,8 @@ num_steps = args["num_steps"]
 input_filename = args["input_filename"]
 input_folder = args["input_folder"]
 output_folder = args["output_folder"]
-
+input_name = input_filename[:-4]
+output_folder = os.path.join(output_folder,input_name)
 
 
 
