@@ -11,6 +11,8 @@ from plot_functions import plot_pitch_histogram
 
 import yaml
 from yaml.loader import SafeLoader
+import sys
+sys.path.append('../')
 
 yaml_path = "global.yaml"
 with open(yaml_path) as f: # load yaml
@@ -144,7 +146,7 @@ def get_harmony_info(filename):
 
 
 
-def retrieve_tracks_info(midi_list, get_info_flag=True, plot_pitches=True, save_flag=False):
+def retrieve_tracks_pitch_curves(midi_list, get_info_flag=True, plot_pitches=True, save_flag=False):
     
     #it gets a midi_list and returns 1 pitch curve for each instrumental track
     

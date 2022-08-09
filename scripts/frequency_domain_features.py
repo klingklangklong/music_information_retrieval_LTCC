@@ -1,5 +1,4 @@
 
-
 import matplotlib.pyplot as plt
 import pypianoroll
 import numpy as np
@@ -13,7 +12,8 @@ from utils import midi_to_list, convert_feature_to_time_domain, map_values, save
 
 import yaml
 from yaml.loader import SafeLoader
-
+import sys
+sys.path.append('../')
 
 ###############################################
 #Load variables from .yml file
@@ -76,7 +76,8 @@ def multitrack_to_score(filename, Fs_frame, pypianoroll_flag = False):
     plot_2Darray(output_score,
                  Fs_frame,
                  xlabel="Time[s]",
-                 ylabel="MIDI Pitch")
+                 ylabel="MIDI Pitch",
+                 title="Frequency score")
 
     return output_score
 
@@ -143,7 +144,10 @@ def get_midi_chroma(score, Fs_frame):
                  Fs_frame,
                  xlabel = "Time [s]",
                  ylabel = "Pitch",
-                 yticks = keys)
+                 yticks = keys,
+                 title="Chromagram")
+
+    
 
     return chroma_midi_norm
 
@@ -177,7 +181,7 @@ def compute_decaying(input_feature, decaying_steps=10):
 
 
 
-def compute_spectral_flux(chroma, Fs_frame, decaying_flag=False, decaying_steps=10, show_peaks=False):
+def compute_spectral_flux(chroma, Fs_frame, decaying_flag=False, decaying_steps=10, show_peaks=False, title=""):
 
     #chroma -> spectral flux
 
@@ -233,6 +237,8 @@ def compute_spectral_flux(chroma, Fs_frame, decaying_flag=False, decaying_steps=
     if(show_peaks):
         peaks_sec = T_coef[peaks]
         plt.plot(peaks_sec, spectral_flux[peaks], 'ro')
+    
+    plt.title(title)
 
 
     plt.show()
@@ -249,8 +255,7 @@ def compute_spectral_flux(chroma, Fs_frame, decaying_flag=False, decaying_steps=
                              new_min = 0,
                              new_max= 128)
 
-    save_txt_list(peaks_array,
-                  filename="spectral_peaks.txt")
+    #              filename="spectral_peaks.txt")
     
     
 

@@ -6,7 +6,8 @@ import yaml
 from yaml.loader import SafeLoader
 import pandas as pd
 from utils import get_2Dpitch_curves, convert_feature_to_time_domain, midi_to_list
-
+import sys
+sys.path.append('../')
 ###############################################
 #Load variables from .yml file
 
@@ -54,6 +55,7 @@ def plot_2Darray(array, Fs_frame, figsize=(16,8), cmap='gray_r', xlabel="", ylab
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.colorbar(im)
+    plt.title(title)
     plt.show()
 
 
