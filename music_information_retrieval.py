@@ -92,9 +92,7 @@ if __name__ == "__main__":
     print("Output folder: ", output_folder)
     os.makedirs(output_folder, exist_ok=True) 
 
-    input_folder = "input_data"
-    filename = "Rebel-Le Cahos.mid"
-    file_path = os.path.join(input_folder, filename)
+    file_path = os.path.join(input_folder, input_filename)
 
     music_information_retrieval_MIDI(file_path)
 
