@@ -62,7 +62,12 @@ Fs_frame=Fs/H
 
 
 def motiv_extraction(file_path):
+    """
+    This functions compute a motiv extraction from a midi file
 
+    Args:
+        file_path (str): path of the input MIDI file
+    """
     split_motiv_harmony(file_path, output_folder)
 
 
@@ -76,7 +81,15 @@ def motiv_extraction(file_path):
 
     midi_list = midi_to_list(filename_mono)
 
-
+    ##Case when Sp already exists, we don't need to re-compute it
+    if(os.path.exists("SP.npy")):
+        retrieve_motivs_from_SP(midi_list,
+                                num_motivs=5,
+                                Fs_frame = Fs_frame,
+                                SP_path = Sp_path,
+                                output_folder=output_folder)
+        return
+    
 
     score = multitrack_to_score(filename_mono, Fs, Fs_frame, n_pitches, lowest_pitch, H)
 
@@ -92,7 +105,7 @@ def motiv_extraction(file_path):
 
     print("calculating fitness...")
     #compute the fitness of all the segments
-    SP_all = libfmp.c4.compute_fitness_scape_plot(S)        #shape = fitness, score, normalized score, coverage, normlized coverage
+    SP_all = libfmp.c4.compute_fitness_scape_plot(S)        #SP_all = fitness, score, normalized score, coverage, normlized coverage. SP is the fitness
     SP=SP_all[0]
     np.save(os.path.join(output_folder, "SP"), SP)
     print("Fitness calculated!")
@@ -117,9 +130,6 @@ def motiv_extraction(file_path):
     #                        Fs_frame = Fs_frame,
     #                        SP_path = Sp_path,
     #                        output_folder=output_folder)
-
-
-
 
 
 

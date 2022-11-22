@@ -37,8 +37,19 @@ keys_ordered = global_var["keys_ordered"]
 
 def multitrack_to_score(filename, Fs_frame, pypianoroll_flag = False):
     """
-    Given a filename of a midi file, it returns a matrix version of the musical score
+    Given a filename of a midi file, this function returns the corresponding feature in the frequency domain of the musical score
+
+    Args:
+        filename (str): path of the midi file
+        Fs_frame (int): sample rate of the feature vector
+        pypianoroll_flag (bool, optional): if true, it uses the pypianoroll library to create the feature. 
+                                           Otherwise it uses the pitch activation from libfmp library. Defaults to False.
+
+    Returns:
+        output_score (np.ndarray): output feature vector
     """
+
+
     H = Fs/Fs_frame
     if(pypianoroll_flag==True):
         beat_resolution = 4  #n° of time steps in a quarter note (16th-note allowed)
@@ -83,8 +94,18 @@ def multitrack_to_score(filename, Fs_frame, pypianoroll_flag = False):
 
 
 def list_to_pitch_activations(note_list, num_frames, frame_rate):
+    """
+    This function is used to create a pitch activation frequency feature starting from a list of notes
+
+    Args:
+        note_list (list): input list of midi notes
+        num_frames (int): num frames of the feature
+        frame_rate (int): sample rate of the feature
+
+    Returns:
+        P (np.ndarray): pitch activation feature vector
+    """
     
-    'The parameter peakheight_scalefactor was taken from the function "midird4_to_pitchOnsetPeaks" '
     
     offset = 1
     P = np.zeros((128, num_frames))
@@ -99,10 +120,19 @@ def list_to_pitch_activations(note_list, num_frames, frame_rate):
 
 
 def normalize_feature_sequence(X, norm=2, threshold=0.0001, v=None):
-    """
+    """    
+    This function normalized the input feature sequence
     The norm value in input is used as the order of normalization of the vector of ones. 
     The resulting normalization is a kind of l^p norm
-    
+
+    Args:
+        X (np.ndarray): input feature
+        norm (int, optional): normalization order. Defaults to 2.
+        threshold (float, optional): _description_. Defaults to 0.0001.
+        v (np.ndarray, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
     """
 
     K, N = X.shape
@@ -128,7 +158,14 @@ def normalize_feature_sequence(X, norm=2, threshold=0.0001, v=None):
 
 def get_midi_chroma(score, Fs_frame):
     """
-    Score -> chroma
+    Given an input feature in the frequency domain, this function calculates the corresponding normalized chroma feature
+
+    Args:
+        score (np.ndarray): input feature in the frequency domain
+        Fs_frame (int): sample rate of the feature vectors
+
+    Returns:
+        chroma_midi_norm (np.ndarray): normalized chroma feature
     """
 
     chroma_midi = np.zeros((12, score.shape[1]))
@@ -138,7 +175,7 @@ def get_midi_chroma(score, Fs_frame):
         chroma_midi[indChroma, :] += score[i, :]
         
     threshold=0.001
-    chroma_midi_norm = normalize_feature_sequence(chroma_midi, norm=2, threshold=threshold)
+    chroma_midi_norm = normalize_feature_sequence(chroma_midi, norm=2, threshold=threshold)         #normalization
 
     plot_2Darray(chroma_midi_norm,
                  Fs_frame,
@@ -152,11 +189,19 @@ def get_midi_chroma(score, Fs_frame):
     return chroma_midi_norm
 
 
+
 def compute_decaying(input_feature, decaying_steps=10):    
-    
     """
-    Compute decaying for 1D feature
+    This function computes a decay to the input feature
+
+    Args:
+        input_feature (np.ndarray): input feature
+        decaying_steps (int, optional): number of decaying steps. Defaults to 10.
+
+    Returns:
+        feature_decay (np.ndarray): feature with decaying
     """
+
 
     len_novelty_spectrum = input_feature.shape[0]       
     novelty_spectrum_decay = np.zeros(len_novelty_spectrum)       
@@ -182,7 +227,20 @@ def compute_decaying(input_feature, decaying_steps=10):
 
 
 def compute_spectral_flux(chroma, Fs_frame, decaying_flag=False, decaying_steps=10, show_peaks=False, title=""):
+    """
+    This function calculates the spectral flux feature.
 
+    Args:
+        chroma (np.ndarray): chroma feature
+        Fs_frame (_type_): sample rate of the feature vectors
+        decaying_flag (bool, optional): if true, it calculates a decaying feature vector. Defaults to False.
+        decaying_steps (int, optional): num of decaying steps. Defaults to 10.
+        show_peaks (bool, optional): if true, the feature plot is showd. Defaults to False.
+        title (str, optional): title of the plot. Defaults to "".
+
+    Returns:
+        spectral flux (np.ndarray): spectral flux feature
+    """
     #chroma -> spectral flux
 
     Y = chroma

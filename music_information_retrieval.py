@@ -50,11 +50,9 @@ Fs_frame=Fs/H
 
 
 def music_information_retrieval_MIDI(file_path):
-
     """
     Given a filename of a midi file, it estracts some musical features from it.
     """
-
 
     midi_list = midi_to_list(file_path)    
 
@@ -84,7 +82,6 @@ def music_information_retrieval_MIDI(file_path):
 
 
 if __name__ == "__main__":
-
     file_path = os.path.join(input_folder, input_filename)
 
     print("Input file: ", input_filename)
