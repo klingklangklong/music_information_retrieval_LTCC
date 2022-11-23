@@ -15,7 +15,13 @@ keys = global_var["keys"]
 
 def midi_to_list(filename):
     """
-    Function that takes a the filename of a midi file in input and returns a midi list of event extracted from it
+    This function takes the filename of a midi file in input and returns a midi list of notes events extracted from it
+
+    Args:
+        filename (str): path of the input midi file
+
+    Returns:
+        midi_list: list of midi notes.
     """
 
     #load file
@@ -71,17 +77,20 @@ def key_number_to_key_name(key_number, show_octave=True):
     return output
 
 
-
 def pitches_to_classes(pitches):
     """
-    Given a list of pitches, it returns the list of pitch classes found
+    Given a list of musical pitches, the function returns the list of pitch classes found
+
+    Args:
+        pitches (_type_): list of musical pitches.
+
+    Returns:
+        pitch_classes_density (list): density of pitch classes
+        pitch_classes_found (list): list of found pitches
     """
 
     pitch_classes_density = np.zeros(12, dtype=int)
-    #pitch_classes = []
-
     pitch_classes_found = []
-
 
     for pitch in pitches:
         pitch_class = key_number_to_key_name(pitch, show_octave=False)
@@ -96,7 +105,12 @@ def pitches_to_classes(pitches):
 
 
 def get_frequency_registers(pitches):
+    """
+    This function calculates the number of notes belonging to different MIDI ranges.
 
+    Args:
+        pitches (list): list of midi notes
+    """
     l_reg = []
     m_reg = []
     h_reg = []
@@ -125,6 +139,16 @@ def get_frequency_registers(pitches):
 
 
 def convert_feature_to_time_domain(input_list, Fs_frame):
+
+    """
+    This function converts the input feature values into time values.
+
+    Args:
+        input_list (list): list of input values in the feature domain. 
+        Fs_frame (int): sample rate
+    Returns:
+        output_list (list): list of output values in the time domain
+    """
     output_list = [x / Fs_frame for x in input_list]
     return output_list
 
@@ -151,10 +175,19 @@ def compute_local_average(x, M):
 
 
 def compute_relative_tempo_difference(times):
+    """
+    This function calculates the derivative of the input array
 
-    relative_times = np.diff(times, )
+    Args:
+        times (np.ndarray): array of input values
+
+    Returns:
+        relative_times (np.ndarray): array of output values 
+    """
+
+    derivative_times = np.diff(times, )
     
-    return relative_times
+    return derivative_times
 
 
 def map_values(input_values, 
@@ -163,7 +196,18 @@ def map_values(input_values,
                new_min=0,
                new_max=128):
 
+    """
+    This function map the input values into a new range a values.
 
+    Args:
+        input_values (list): list of input values
+        prev_min (int): minimum of the input range
+        prev_max (int): maximum of the input range
+        new_min (int): minimum of the output range
+        new_max (int): maximum of the output range
+    Returns:
+        mapped_values (list): list of output mapped values
+    """
 
     if((prev_min==0) and (prev_max==0)):
         prev_min = min(input_values)
@@ -176,32 +220,44 @@ def map_values(input_values,
 
     for v in input_values:
         mapped_v = int(np.round(new_min + (float(v - prev_min) / float(left_span)) * right_span))     #round is to get the int part
-        
         mapped_values.append(mapped_v)
 
     return mapped_values
 
 
 def list_to_text(input_list):
-
     """
-        Utility function used to make a list in a format readable by a Max collection
+    This function is used to make a list in a format readable by a Max collection
+
+    Args:
+        input_list (list): input list of values
+
+    Returns:
+        output_list (list): output list of values
     """
 
-    output_text = []
+    output_list = []
 
     for row in input_list:
         row_txt = str(row)
         row_txt = row_txt.replace(",", " ")
         row_txt = row_txt.replace("[", "")
         row_txt = row_txt.replace("]", "")
+        output_list.append(row_txt)
 
-        output_text.append(row_txt)
-
-    return output_text
+    return output_list
 
 
 def midi_to_chroma_list(input_midi_list):
+    """
+    This function converts a list of midi notes into a list of chroma key values.
+
+    Args:
+        input_midi_list (list): list of midi notes 
+
+    Returns:
+        output_key_list (list): list of output 
+    """
 
     output_key_list = []
 
@@ -213,7 +269,15 @@ def midi_to_chroma_list(input_midi_list):
 
 
 def midi_to_chroma_letter(list_midi_values):
+    """
+    This function converts a list of midi values into a list of chroma key values
 
+    Args:
+        list_midi_values (list): list of midi values
+
+    Returns:
+        list_chroma_letters (list): output list of chroma key values
+    """
 
     list_chroma_letters = []
 
@@ -236,10 +300,16 @@ def add_pitch_offset_to_midi_list(input_list,
                                   offset_pitch = 0):
 
     """
-    Function that adds an offset to each midi pitch of a list
+    This function adds an offset to each midi pitch of the input list.
+
+    Args:
+        input_list (list): list of input pitch values
+        offset_pitch (int): offset to add to the input list
+
+    Return:
+        input_list (list): list of input pitch values after 
     """
 
-    output_list = []
     for i in range(len(input_list)):
         if(len(input_list[i])>0):
             for j in range(len(input_list[i])):
@@ -253,9 +323,16 @@ def add_pitch_offset_to_midi_list(input_list,
 def delete_zero_values(input_list):
     
     """
-    Function used to substitue zero values with the first non-zero value 
+    This function is used to substitue zero values with the first non-zero value 
     that comes in chronological order
+
+    Args:
+        input_list (list): list of input values.
+
+    Returns:
+        output_list (list): list of output values.
     """
+
 
     index_list = np.arange(len(input_list))
 
@@ -270,7 +347,15 @@ def delete_zero_values(input_list):
 
 def get_start_end_frame(midi_note, Fs):
     """
-    Given a midi note, it returns the start and the end frame, according to a certain Fs
+    Given a midi note, this function returns the start and the end frame, according to a certain sample rate
+
+    Args:
+        midi_note (list): midi note event list
+        Fs (int): sample rate
+
+    Returns:
+        start_frame (int)
+        end_frame (int)
     """
 
     start_time = midi_note[0]
@@ -281,15 +366,22 @@ def get_start_end_frame(midi_note, Fs):
 
     return start_frame, end_frame
 
-
+#
 def get_2Dpitch_curves(track_midi_list):
     
-    #given a midi list of one instrument, it returns a 2D list of the x and y axis of the pitch curve
+    """
+    Given a midi list of one instrument, this function returns a 2D list of the x and y axis of the pitch curve.
+    The x-axis is the time position of the pitches, the y-axis is the pitch.
+
+    Args:
+        track_midi_list (list): midi list of notes corresponding to one track.
+    Returns:
+        pitch_curve2D (list): output list 
+    """
 
     x_axis = [] #start time positions
     y_axis = [] #pitches
 
-    
     for note_event in track_midi_list:
         x_axis.append(note_event[0])
         y_axis.append(note_event[2])
@@ -307,23 +399,26 @@ def write_harmony_file(input_triads,
                        output_folder = ""):
     
     """
-        Given a list of triads, it writes the triads and the harmony detected
-        only in the time frame where we have a detected triad
+    Given a list of triads, this function writes the triads and the harmony detected
+    only in the time frame where we have a detected triad.
+
+    Args:
+        input_triads (list): list of triads
+        expanded_main_notes_list (np.ndarray): feature vector containing the most played note for each frame
+        input_harmony (list): list of harmony notes
+        name_file (str): name of the tfile
+        output_folder (str): name of the output folder
     """
+
     filename = os.path.join(output_folder, name_file)
     file = open(filename, 'w')
 
 
     for i in range(len(input_triads)):
         
-        if(len(input_triads[i])== 0 ):      #and (len(input_harmony[i])==0)
+        if(len(input_triads[i])== 0 ):    
             file.write("\nFrame " + str(i).zfill(2) +
                 " )  Pad note: " +  str(keys[expanded_main_notes_list[i]%12]) )            
-            
-        #elif(len(input_triads[i])== 0 and (len(input_harmony)==0)):
-        #    file.write("\nFrame " + str(i).zfill(2) +
-        #        " )  Pad note: " +  str(keys[expanded_main_notes_list[i]%12]) )    
-
         else:
             file.write("\nFrame " + str(i).zfill(2) +
                 " )  Pad note: " +  str(keys[expanded_main_notes_list[i]%12]) +
@@ -337,16 +432,20 @@ def write_harmony_file(input_triads,
 
 
 def save_txt_list(values, filename="out.txt",  save_path=""):
-    
+    """
+    This function saves a list of values as .txt file
+
+    Args:
+        values (list): array of values 
+        filename (str, optional): name of the output .txt file. Defaults to "out.txt".
+        save_path (str, optional): name of the output folder. Defaults to "".
+    """
     filename = os.path.join(save_path, filename)
-
     file = open(filename, 'w')
-
 
     for i, value in enumerate(values):
         row_txt = str(i) + ", " + str(value) + ";\n"
         file.write(row_txt)
-
 
     file.close()
     return
@@ -354,9 +453,16 @@ def save_txt_list(values, filename="out.txt",  save_path=""):
 
 
 def save_txt_array(times, values, filename="out.txt", save_path=""):
+    """
+    This function saves a list of values with their corresponding times as .txt file
 
+    Args:
+        times (list): list of times
+        values (list): list of values 
+        filename (str, optional): name of the output .txt file. Defaults to "out.txt".
+        save_path (str, optional): name of the output folder. Defaults to "".
+    """
     filename = os.path.join(save_path, filename) 
-    
     file = open(filename, 'w')
 
     for i, (time,value) in enumerate(zip(times,values)):
@@ -372,22 +478,38 @@ def save_txt_array(times, values, filename="out.txt", save_path=""):
 
 def save_txt_2Darray(values, filename="out.txt", save_path=""):
 
+    """
+    This function saves an array of values as .txt file
+
+    Args:
+        values (np.ndarray): array of values 
+        filename (str, optional): name of the output .txt file. Defaults to "out.txt".
+        save_path (str, optional): name of the output folder. Defaults to "".
+    """
+
     filename = os.path.join(save_path, filename)
     file = open(filename, 'w')
 
     for i, value in enumerate(values):
-
         row_txt = str(value[0]) + ", " + str(value[1]) + ";\n"
         file.write(row_txt)
     
-
     file.close()
     return
 
 
 def list_to_pitch_activations(note_list, num_frames, frame_rate):
-    
-    'The parameter peakheight_scalefactor was taken from the function "midird4_to_pitchOnsetPeaks" '
+    """
+    This function is used to create a pitch activation frequency feature starting from a list of notes
+
+    Args:
+        note_list (list): input list of midi notes
+        num_frames (int): num frames of the feature
+        frame_rate (int): sample rate of the feature
+
+    Returns:
+        P (np.ndarray): pitch activation feature vector
+    """
     
     offset = 1
     P = np.zeros((128, num_frames))
@@ -403,16 +525,23 @@ def list_to_pitch_activations(note_list, num_frames, frame_rate):
 
 def multitrack_to_score(filename, Fs, Fs_frame, n_pitches, lowest_pitch, H):
     """
-    Given a filename of a midi file, it returns a matrix version of the musical score
+    Given a filename of a midi file, this function returns the corresponding feature in the frequency domain of the musical score
+
+    Args:
+        filename (str): path of the midi file
+        Fs_frame (int): sample rate of the feature vector
+        pypianoroll_flag (bool, optional): if true, it uses the pypianoroll library to create the feature. 
+                                           Otherwise it uses the pitch activation from libfmp library. Defaults to False.
+
+    Returns:
+        output_score (np.ndarray): output feature vector
     """
 
     pypianoroll_algorithm_flag = False
 
-
     if (pypianoroll_algorithm_flag==True):
         beat_resolution = 4  #n° of time steps in a quarter note (16th-note allowed)
         #beat_resolution = 24  #n° of time steps in a quarter note (16th-note allowed)
-
 
         multitrack  = pypianoroll.read(filename, resolution=beat_resolution)   
 
@@ -431,7 +560,6 @@ def multitrack_to_score(filename, Fs, Fs_frame, n_pitches, lowest_pitch, H):
         output_score = output_score.T
 
     else:
-        
         midi_list = midi_to_list(filename)
         dur_symb = midi_list[-1][1]    ##release of the last note = dur midi file
         print("time duration: ", dur_symb)
@@ -440,9 +568,7 @@ def multitrack_to_score(filename, Fs, Fs_frame, n_pitches, lowest_pitch, H):
         print("len symb: ", len_symb)
         num_features = int(len_symb / H)   #n° features
         print("n features: ", num_features)
-
         output_score_128_pitches = list_to_pitch_activations(midi_list, num_features, Fs_frame)
-
         output_score = np.zeros((n_pitches, num_features))
         output_score[:,:] = output_score_128_pitches[lowest_pitch:lowest_pitch + n_pitches, :]
         
@@ -452,10 +578,23 @@ def multitrack_to_score(filename, Fs, Fs_frame, n_pitches, lowest_pitch, H):
 
 
 def find_index_in_array(value, input_array):
+    """
+    This functions return the index of a value in an array.
+    If the value is not inside the array, it returns -1.
+
+    Args:
+        value (int): value to find
+        input_array (np.ndarray): input array
+
+    Returns:
+        found_idx (int): index of the value.
+    """
 
     for i, elem in enumerate(input_array):
         if(elem == value):
             #print("index: ", i)
             found_idx = i
+        else: 
+            found_idx = -1
 
     return found_idx

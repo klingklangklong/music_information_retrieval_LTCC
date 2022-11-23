@@ -75,9 +75,6 @@ def retrieve_midi_thumbnail(segment, original_midi_list, Fs_frame, output_folder
 
         start = note_event[0]
         end = note_event[1]
-        
-        #note = pretty_midi.Note(   velocity=100, pitch=note_number, start=0, end=.5)
-    
         if((end>time_start) and (start<time_end)):
             note = pretty_midi.Note(velocity = note_event[3],
                                     pitch = note_event[2],
@@ -138,7 +135,6 @@ def retrieve_motivs_from_SP(midi_list, num_motivs, Fs_frame, SP_path, output_fol
         curr_time_segment = [time_low_bound, time_high_bound]
 
         print("\n" + str(i) + ")")
-
         retrieve_midi_thumbnail(segment = curr_frame_segment, 
                         original_midi_list = midi_list,
                         Fs_frame = Fs_frame,

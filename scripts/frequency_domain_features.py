@@ -106,7 +106,6 @@ def list_to_pitch_activations(note_list, num_frames, frame_rate):
         P (np.ndarray): pitch activation feature vector
     """
     
-    
     offset = 1
     P = np.zeros((128, num_frames))
 

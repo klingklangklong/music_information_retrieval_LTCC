@@ -23,11 +23,13 @@ lowest_pitch = global_var["lowest_pitch"]
 keys = global_var["keys"]
 
 
-
-
 def get_info_from_midi_list(midi_list, show_histograms=False):
     """
-    Given a midi list of events, it returns some musical information extracted from this list.
+    Given a midi list of events, this function returns some musical information extracted from this list.
+
+    Args:
+        midi_list (list): input list of midi files
+        show_histograms (bool, optional): if true, the histograms are plotted and showed. Defaults to False.
     """
     dur_midi = max(list(map(lambda x:x[1], midi_list)))
     pitches = sorted(list(map(lambda x:x[2], midi_list)))
@@ -46,7 +48,6 @@ def get_info_from_midi_list(midi_list, show_histograms=False):
     std_pitch = np.std(pitches)
     instruments = sorted(list(set(map(lambda x:x[4], midi_list)))) 
 
-    
     print("N° notes: ", num_notes)  
     print("N° unique pitches", num_unique_pitches) 
     print("N° pitch classes: ", num_pitch_classes)  
@@ -61,7 +62,6 @@ def get_info_from_midi_list(midi_list, show_histograms=False):
     get_frequency_registers(pitches)
 
     print("Instruments: ", instruments) 
-
 
     if (show_histograms):
 
@@ -84,7 +84,6 @@ def get_info_from_midi_list(midi_list, show_histograms=False):
         plt.xticks(xticks)
         plt.show()
         
-
         #hist of the chroma classes
         fig = plt.figure(figsize=(20,6))
         plt.bar(x = keys,
@@ -97,9 +96,12 @@ def get_info_from_midi_list(midi_list, show_histograms=False):
 
 def get_harmony_info(filename):
     """
-    Given the filename path of a midi file, it returns some harmonic and structure information from this song.
-    """
+    Given the filename path of a midi file, the function returns some harmonic and structure information from this song.
+    The function is able to detect the tempo, the time signature, and the key of the input midi file. 
 
+    Args:
+        filename (str): filename of the input midi file.
+    """
 
     score_data = music21.converter.parse(filename)
 
@@ -113,7 +115,6 @@ def get_harmony_info(filename):
     #Tempo and time signature detection
     for p in part:
         for n in p:
-
             if type(n) == music21.meter.TimeSignature: 
                 numerator = n.numerator
                 denominator = n.denominator
@@ -126,7 +127,6 @@ def get_harmony_info(filename):
 
     print("\nTempo list: ", *tempo_list)
     print("BPM list: ", *bpm_list)
-
 
     #Key detection
     try:
@@ -147,7 +147,15 @@ def get_harmony_info(filename):
 
 
 def retrieve_tracks_pitch_curves(midi_list, get_info_flag=True, plot_pitches=True, save_flag=False):
-    
+    """
+    Given a list of midi notes, this function extracts and plot one curve of pitches for each track.
+
+    Args:
+        midi_list (list): list of midi notes
+        get_info_flag (bool, optional): if True, it show information for each track. Defaults to True.
+        plot_pitches (bool, optional): if True, it plots and show the curves. Defaults to True.
+        save_flag (bool, optional): if True, a .txt file with the retrieved information is saved. Defaults to False.
+    """
     #it gets a midi_list and returns 1 pitch curve for each instrumental track
     
     df = pd.DataFrame()
@@ -161,8 +169,6 @@ def retrieve_tracks_pitch_curves(midi_list, get_info_flag=True, plot_pitches=Tru
     multitrack_midi_list = [[y for y in midi_list if y[4]==x] for x in instruments]     #each element is a midi list of a single track     
 
     for track_midi_list in multitrack_midi_list:
-        
-        
         if(get_info_flag):
             print("\nInstrument track: ", instruments[i])
             get_info_from_midi_list(track_midi_list)
@@ -201,7 +207,19 @@ def get_statistics_from_mono_midi(filename,
                                   save_path= ""):
 
     """
-    
+    This function retrieves information from a mono-track midi file.
+    A statistic regarding the local maxima and minima of the musical pitches is extracted.
+
+    Args:
+        filename (str): path of the midi file
+        average_flag (bool): if True, the average of the extracted curves of values is computed
+        average_param (int): window of samples for the average calculation-
+        save_flag (boolean): if True, the .txt files with the curve values are saved
+        plot_flag (boolean): if True, the plots are showed
+        save_path (str): path where we can save 
+    Returns:
+        max_array (np.ndarray): curve representing the local maxima of the musical pitches of the input song
+        min_array: (np.ndarray): curve representing the local minima of the musical pitches of the input song
     """
 
     midi_data = pretty_midi.PrettyMIDI(save_path + "/" + filename)
@@ -213,7 +231,6 @@ def get_statistics_from_mono_midi(filename,
     min_list = []
 
     dur = midi_list[-1][1]
-    #print("Duration: ", dur)
     time_frames = (np.arange(0, dur+1, 1/Fs_msp, dtype=float))
 
     max_array = np.zeros(shape=len(time_frames), dtype=int)
@@ -235,7 +252,6 @@ def get_statistics_from_mono_midi(filename,
     selected_harmony_groups = []
 
     for group in group_by_start_time:
-        
         if len(group) > 1:
             
             midi_min = group[0]
@@ -251,18 +267,12 @@ def get_statistics_from_mono_midi(filename,
             min_array[start_min:end_min] = midi_min[2]
             max_array[start_max:end_max] = midi_max[2]
 
-
-            #max = note for note in group 
-
         else:
             note = group[0]
 
     
     #to find the local maxima
     print(len(min_array))
-
-    #min_array = delete_zero_values(min_array)
-    #max_array = delete_zero_values(max_array)
     
     avg_array[:] = (max_array[:] + min_array[:]) / 2
 
@@ -293,7 +303,6 @@ def get_statistics_from_mono_midi(filename,
         
         plt.ylabel("MIDI Pitch")
         plt.xlabel("Time [s]")
-
         plt.legend(["Min curve", "Max curve"], fontsize=15)
 
         plt.show()

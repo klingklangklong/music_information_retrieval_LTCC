@@ -52,30 +52,20 @@ def get_triad_from_notes(midi_note,
         minor_triad.append(curr_note)
         minor_triad_keys.append(key_number_to_key_name(curr_note, show_octave=False))
 
-
-    #print("Note: ", key_number_to_key_name(midi_note, show_octave=False), "| Major triad :" , major_triad_keys, " | Minor Triad: ", minor_triad_keys)
-
-
     if (set(major_triad) <= set(input_midi_harmony)):
-        #print("Tonic note -> ", key_number_to_key_name(midi_note, show_octave=False), "| Major triad :" , major_triad_keys)
         found_chord = "\nTonic note -> " + str(key_number_to_key_name(midi_note, show_octave=False)) + "| Major triad :" + str(major_triad_keys)
         file_txt.write(found_chord)
 
         out_triads.append(major_triad)
 
     if (set(minor_triad) <= set(input_midi_harmony)):
-        #print("Tonic note -> ", key_number_to_key_name(midi_note, show_octave=False), " | Minor Triad: ", minor_triad_keys)
         found_chord = "\nTonic note -> " + str(key_number_to_key_name(midi_note, show_octave=False)) + " | Minor Triad: " + str(minor_triad_keys)
         file_txt.write(found_chord)
-
         out_triads.append(minor_triad)
 
     out_triads = [x for x in out_triads]
 
     return out_triads
-
-
-
 
 def harmony_to_filtered_triads(detected_harmony, expanded_main_notes_list, output_folder=''):
     """
@@ -104,18 +94,13 @@ def harmony_to_filtered_triads(detected_harmony, expanded_main_notes_list, outpu
         file.write(separator_txt)
 
         frame_txt = "Frame n° " + str(i).zfill(2) + "| Most played note: " + keys[expanded_main_notes_list[i]%12] + " | Detected harmony: " + str(midi_to_chroma_list(harm))
-        #print(frame_txt)
         file.write(frame_txt)
 
-        #print("Frame n°", str(i).zfill(2), "| Most played note: ", keys[expanded_main_note_list[i]%12], " | Detected harmony: ", midi_to_chroma_list(harm))
         if(len(harm)>0):
             file.write("\n\nPossible triads:")
-
             found_triads_in_frame = []
 
-
             for note in harm:
-
                 #for each note of the detected harmony, we find its triads
                 curr_note_found_triads = get_triad_from_notes(note, 
                                                               harm,
@@ -189,16 +174,13 @@ def get_one_triad_per_frame(found_triads, expanded_main_notes_list, num_steps, o
             #case: we haven't found a triad yet. choose randomly one of the available triads.
             #NOTE: now it takes the first triad.
             if(len(previous_triad)==0):
-                #previous_triad = random.choice(curr_frame_triads)
                 previous_triad = curr_frame_triads[2]
                 output_list_triads.append(midi_to_chroma_list(previous_triad))
                 output_midi_triads.append(previous_triad)
                 file.write("\nFrame " + str(i).zfill(2) + " | Main note: " +  keys[expanded_main_notes_list[i]%12] + " | Triad : " + str(midi_to_chroma_list(previous_triad)))
 
             else:
-
                 differences = []
-
                 #calculate similarity with the previously found triad and the ones found in this time frame
                 for triad in curr_frame_triads:
 
@@ -219,9 +201,7 @@ def get_one_triad_per_frame(found_triads, expanded_main_notes_list, num_steps, o
 
                 previous_triad = current_triad
 
-                
                 file.write("\nFrame " + str(i).zfill(2) + " | Main note: " +  keys[expanded_main_notes_list[i]%12] + " | Triad : " + str(midi_to_chroma_list(curr_frame_triads[index_min])))
-
 
         i = i+1
 
@@ -258,13 +238,10 @@ def order_triads(input_list_triads,
     ordered_list_triads = []
 
     for i, triad in enumerate(input_list_triads):
-
         input_midi_harmony = [x%12 for x in detected_harmony[i]]
-
         current_indexed_triad = []
 
         if(len(input_midi_harmony)>0):
-
             for note in triad:
                 index = input_midi_harmony.index(note)
                 current_indexed_triad.append([index, note])
@@ -286,7 +263,6 @@ def invert_and_filter_triads(input_list_triads,
                             detected_harmony):
     
     """
-
     Input: we have maximum one triad per time frame.
     
     1) Inversion: we move from triad to triad with the smoothest possible line in the melody voice (first note of the triad).
@@ -302,8 +278,6 @@ def invert_and_filter_triads(input_list_triads,
 
     """
 
-    #file = open("inverted filtered triads.txt", 'w')
-
     ordered_list_triads = []
     previous_triad = []
     current_triad = []
@@ -316,21 +290,15 @@ def invert_and_filter_triads(input_list_triads,
         current_indexed_triad = []
 
         if(len(triad)>0):
-            
             if(len(previous_triad)==0):
                 previous_triad = triad
-                #print(previous_triad)
-
-                
                 ordered_list_triads.append(previous_triad)
                 continue
-
             else:
 
                 current_triad = triad
 
                 first_note_previous_triad = previous_triad[0]
-
                 differences_with_prev_main_note = []
 
                 #calculate the relative difference between the first pitch of the
@@ -369,7 +337,6 @@ def invert_and_filter_triads(input_list_triads,
                 else:
                     repetition_counter = max(0, repetition_counter-1)
                 
-
                 if(repetition_counter>1):
                     #print("Triad rolled!")
                     current_triad = list(np.roll(current_triad, 
@@ -379,20 +346,10 @@ def invert_and_filter_triads(input_list_triads,
                 ################################################################
 
                 previous_triad = current_triad
-
                 ordered_list_triads.append(current_triad)
 
-
-
         else:
-                
                 ordered_list_triads.append([])
-
-    #write output file
-    #write_harmony_file(input_triads = ordered_list_triads,
-    #                   expanded_main_notes_list = expanded_main_notes_list,
-    #                   input_harmony = detected_harmony,
-    #                   name_file = song_name +".txt")
     
     return ordered_list_triads
 
@@ -430,13 +387,11 @@ def shift_list_notes(input_list,
 
     """
 
-    #for each shift
     for i in range(num_shift):
         shifted_list = []
         for j, elem in enumerate(input_list):
 
             shifted_list.append(list(np.roll(input_list[j], i)))
-
 
         write_harmony_file(input_triads = shifted_list,
                            expanded_main_notes_list = expanded_main_notes_list,
@@ -445,9 +400,7 @@ def shift_list_notes(input_list,
         print(shifted_list)
 
 
-    """
-    
-    """
+
 def get_three_shifted_triad_list(triads_list, detected_harmony, expanded_main_notes_list, song_name="", output_folder=""):
 
     """
@@ -460,8 +413,6 @@ def get_three_shifted_triad_list(triads_list, detected_harmony, expanded_main_no
         song_name (str, optional): name of the song. Defaults to "".
         output_folder (str, optional): name of the output folder. Defaults to "".
     """
-
-
 
     for shift in range(3):
         ordered_triads_list = order_triads(triads_list,
@@ -487,7 +438,6 @@ def get_three_shifted_triad_list(triads_list, detected_harmony, expanded_main_no
 
 
 
-
 def filter_chord_repetition(detected_chords):
 
     """
@@ -508,8 +458,6 @@ def filter_chord_repetition(detected_chords):
 
     for i in range(num_steps):
         ordered_chords[i] = sorted(ordered_chords[i])
-
-    
 
     #count list of notes in a time frame with length >0 before filtering
     len_before_filtering=0
@@ -548,17 +496,9 @@ def filter_chord_repetition(detected_chords):
         if(len(ordered_chords[k])>0):
             len_after_filtering+=1
 
-
-    #print(len_before_filtering, len_after_filtering)
-
     return ordered_chords
 
 
-
-
-    """
-
-    """
 def get_sorted_list_most_played_pitches(input_pitches):
 
     """
@@ -584,10 +524,6 @@ def get_sorted_list_most_played_pitches(input_pitches):
     return sorted_list_most_played_pitches
 
 
-
-
-
-
 def find_most_played_note_in_song_portion(detected_harmony,
                                           portion_size = 10,
                                           num_steps = 100):
@@ -605,7 +541,6 @@ def find_most_played_note_in_song_portion(detected_harmony,
         portion_size (int): num of steps in which finding the pad note.
         num_steps (int): num of frames
     """
-
 
     count =0
     portion_harmony = []
@@ -656,10 +591,6 @@ def find_most_played_note_in_song_portion(detected_harmony,
     return expanded_main_notes_list
 
 
-
-    """
-        
-    """
 def retrieve_most_important_notes(midi_list, 
                                   num_steps=100,
                                   output_folder = "",
@@ -682,7 +613,6 @@ def retrieve_most_important_notes(midi_list,
     Returns:
         detected_harmony (list):  most played notes
     """
-
 
     time_frames_groups = group_notes_in_time_frame(midi_list,
                                                     num_steps=num_steps)
@@ -721,8 +651,6 @@ def retrieve_most_important_notes(midi_list,
 
         detected_harmony.append(detected_pitches)
 
-
-    
     detected_filtered_harmony = filter_chord_repetition(detected_harmony)
     list_chroma_letters = midi_to_chroma_letter(detected_filtered_harmony)
     detected_filtered_harmony_text = list_to_text(detected_filtered_harmony)
@@ -737,11 +665,6 @@ def retrieve_most_important_notes(midi_list,
         save_txt_list(values = detected_harmony_chroma_letters,
                       filename= "top_played_notes(chroma_letters).txt",
                       save_path=output_folder)
-
-        ##save the most played note for each frame
-        #save_txt_list(values = most_important_pitches,
-        #             filename= "most_important_pitches.txt")
-
 
     return detected_harmony
 
@@ -764,12 +687,8 @@ def group_notes_in_time_frame(midi_list,
     dur = midi_list[-1][1]
 
     step_time_duration = dur/num_steps
-    #print("Song duration: ", dur)
 
     time_frames = list(np.arange(0, dur+1, step_time_duration, dtype=float))
-    #time_frames = list(np.arange(0, dur+1, 1/Fs_msp, dtype=float))
-    #print("Time frames: ", time_frames)
-
     time_frames_groups = [[y for y in midi_list if (y[0]>=time_frames[i] and y[0]<time_frames[i+1])] for i in range(len(time_frames)-1)]  
 
     return time_frames_groups
@@ -820,13 +739,10 @@ def get_num_pitches_per_time_frame(input_midi_list,
 
     range_arr = max_arr - min_arr
 
-
     prominence=7
     distance=2
     offset=2
     filter_size=25
-
-
 
     height = filters.median_filter(range_arr, 
                                    size=filter_size) + offset
@@ -836,7 +752,6 @@ def get_num_pitches_per_time_frame(input_midi_list,
                                         prominence=prominence,
                                         distance=distance)
 
-
     inverted_range_arr = (range_arr*-1) + max(range_arr)
     height = filters.median_filter(inverted_range_arr, 
                                    size=filter_size) + offset
@@ -845,8 +760,6 @@ def get_num_pitches_per_time_frame(input_midi_list,
                                         height=height,
                                         prominence=prominence,
                                         distance=distance)
-
-
 
     #map between 0 and 10 (num of notes of MAX)
     mapped_range_arr = np.array(map_values(range_arr,
@@ -864,7 +777,6 @@ def get_num_pitches_per_time_frame(input_midi_list,
 
 
     if(plot_flag):
-
         fig = plt.figure(figsize=(20,8))
         plt.title("Range curve with detected events")
         plt.xlabel("Time frame")
@@ -875,8 +787,6 @@ def get_num_pitches_per_time_frame(input_midi_list,
         plt.legend(loc="upper left")
         plt.grid()
         plt.show()
-
-
 
         fig = plt.figure(figsize=(20,8))
         plt.title("Range curve with detected events (mapped in the number of notes to play)")
@@ -889,7 +799,6 @@ def get_num_pitches_per_time_frame(input_midi_list,
         plt.grid()
         plt.show()
 
-
         fig = plt.figure(figsize=(20,8))
         plt.title("Detected events before filtering")
         plt.xlabel("Time frame")
@@ -900,13 +809,8 @@ def get_num_pitches_per_time_frame(input_midi_list,
         plt.grid()
         plt.show()
 
-
         fig = plt.figure(figsize=(20,8))
 
-
-        #plt.plot(mapped_range_array_w_zeros, 'bo')
         plt.show()
 
     return mapped_range_array_w_zeros
-
-

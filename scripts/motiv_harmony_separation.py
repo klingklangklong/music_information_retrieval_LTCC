@@ -7,10 +7,6 @@ import random
 from utils import save_txt_list, get_start_end_frame
 from plot_functions import plot_curve_pitches
 
-
-
-
-
 def select_note_from_group(group, logic_type):
     """
     Given a group of notes, it selects one based on the defined logic type.
@@ -41,7 +37,6 @@ def select_note_from_group(group, logic_type):
 
     notes_indices = list(range(0,len(group)))
     
-
     if logic_type == 0: # select min index
         selected_idx = 0
     elif logic_type == 1: # select middle index (if possible)
@@ -54,14 +49,9 @@ def select_note_from_group(group, logic_type):
     elif logic_type == 2: # select max index
         selected_idx = len(group) - 1
 
-    #print("Selected idx: ", selected_idx)
-    #print("Indices: ", notes_indices)
-
 
     #HANDLE: case in which in each group there are only 2 notes: 1 will be the melody and 1 the harmony.
-    
     harmony_notes = [group[i] for i in notes_indices if i != selected_idx]
-    
     motiv_note = group[selected_idx]
 
 
@@ -72,14 +62,20 @@ def select_note_from_group(group, logic_type):
 def postprocess_motiv_harmony(input_list, 
                               L=5,
                               max_dur = 2):
-
     """
-    For each note, it controls if the next L notes start before its end.
+    For each note, the function controls if the next L notes start before its end.
     If yes, the next tone belongs to the harmony track.
 
-    L = num of next notes to be checked
-    max_dur = 2  maximum duration in seconds allowed for a single note
+    Args:
+        input_list (list): input list of midi notes
+        L (int): num of next notes to be checked. Defaults to 5.
+        max_dur (int, optional): maximum duration in seconds allowed for a single note. Defaults to 2.
+
+    Returns:
+        motiv_list (list): list of notes belonging to the motiv
+        additional_harmony_list (list): list of notes belonging to the harmony
     """
+
     #order values by start time
     input_list = sorted(input_list, key=lambda x: (x[0], x[1]))   
 
@@ -94,10 +90,6 @@ def postprocess_motiv_harmony(input_list,
     avg_pitch = np.round(np.average(pitch_list))
     std_pitch = np.round(np.std(pitch_list))
     low_limit_pitch = int(avg_pitch-std_pitch)
-    #print(low_limit_pitch)
-
-
-
 
     i=0
     while(i < len_input_list):
@@ -116,12 +108,6 @@ def postprocess_motiv_harmony(input_list,
                 i+=1
                 continue                
 
-            ##filter if the duration is higher than max_dur
-            #if((curr_end - curr_start) > max_dur):
-            #    additional_harmony_list.append(curr_note)
-            #    i+=1
-            #    continue
-
             motiv_list.append(curr_note)
 
             try:
@@ -139,22 +125,24 @@ def postprocess_motiv_harmony(input_list,
             except:
                 #if we are out of range, we decrement the n° of next notes to be checked
                 L = L-1
-                #print("Out of range. Decrement L = ", L)
                 continue
                 
-
-
         i+=1
 
     return motiv_list, additional_harmony_list
 
 
-
-
 def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
-
     """
-    Given a 1-track midi file, it splits it into melody and chords
+    Given a 1-track midi file, the function splits it into melody and chords
+
+    Args:
+        input_midi_file (PrettyMIDI): midi file composed of 1 track
+        Fs_msp (int): sample rate
+        save_path (str, optional): path where the output file is saved. Defaults to "".
+
+    Returns:
+        out_midi(PrettyMIDI): midi file composed of a motiv track and a harmony track.
     """
 
     midi_list = []
@@ -166,7 +154,6 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
             end = note.end 
             pitch = note.pitch
             midi_list.append([start, end, pitch])   
-
 
     # sort midi list by start time, and by pitch
     midi_list = sorted(midi_list, key=lambda x: (x[0], x[2])) 
@@ -180,7 +167,6 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
     selected_notes = [] 
     selected_harmony_groups = []
 
-
     #motiv/harmony split
     for group in group_by_start_time:
         #if there is polyphony (group dimension > 1), we split the notes into note and harmony, otherwise we have only the melody.
@@ -192,7 +178,6 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
 
         selected_notes.append(note)
 
-
     #postprocessing
     motiv_list, additional_harmony_list = postprocess_motiv_harmony(selected_notes)
 
@@ -202,19 +187,11 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
     #flatten harmony groups into a list of single note items
     selected_harmony_notes = [item for sublist in selected_harmony_groups for item in sublist]
 
-
-    #midi_list -> midi_frame
     #time -> frame
-    #ToDo: function!!
-    #print("motiv list: ", motiv_list)
     frames_list = midi_list_to_frames_list(motiv_list, Fs_msp)
-
-    #save_txt_list(frames_list, filename = "melody.txt")
-
 
     # write resulting midi file out
     out_midi = pretty_midi.PrettyMIDI()
-
 
     #create melody and harmony instruments
     melody_program = pretty_midi.instrument_name_to_program('Violin')
@@ -234,8 +211,6 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
     save_flag = True
 
     out_path_file = os.path.join(save_path,"motiv.mid")
-
-
 
     #save melody and harmony separately
     if(save_flag):
@@ -257,25 +232,38 @@ def mono_to_motiv_harmony(input_midi_file, Fs_msp, save_path=""):
 
 def midi_list_to_frames_list(input_midi_list, Fs_msp):
 
+    """
+    This functions convert an input midi list from the time domain to the frame domain
+
+    Args:
+        input_midi_list (list): input list of midi notes in the time domain
+        Fs_msp (int): sample rate
+    Returns:
+        frame_list (np.ndarray):  array of midi notes in the frame domain
+    """
+
     dur = input_midi_list[-1][1]
 
-    #ToDo: parametrize Fs
     time_frames = (np.arange(0, dur+1, 1/Fs_msp, dtype=float))
     frames_list = np.zeros(shape=len(time_frames), dtype=int)
 
     for midi_note in input_midi_list:
-
         start_min, end_min = get_start_end_frame(midi_note, Fs=Fs_msp)
         frames_list[start_min:end_min] = midi_note[2]
     
-
     return frames_list
 
 
 def multi2mono_midifile(multitrack, save_path=""):
-
     """
-    Given a multi-track pypiano object, it returns its mono-track version
+    Given a multi-track pypiano object, this function returns its mono-track version
+
+    Args:
+        multitrack (pypianoroll.Multitrack): multitrack object of the input file
+        save_path (str, optional): output folder. Defaults to "".
+
+    Returns:
+        midi_data (PrettyMidi): midi object of the mono-track compressed version of the input file.
     """
 
     n_tracks = len(multitrack.tracks)
@@ -297,9 +285,6 @@ def multi2mono_midifile(multitrack, save_path=""):
 
     mono_track = pypianoroll.StandardTrack(name = "Mono", program = 1, is_drum=False, pianoroll=mono_piano_roll)
 
-    #set global tempo (usefull?)
-    #mono_track.tempo = np.ones((len_piano_roll[0],1)) * global_bpm  
-
     #overwrite multitrack with the new single-track pianoroll
     multitrack.tracks = [mono_track]
 
@@ -315,9 +300,13 @@ def multi2mono_midifile(multitrack, save_path=""):
 def split_motiv_harmony(filename, output_folder):
     
     """
-    Given a midifile. this fucntion creates a file with 2 tracks, one for the harmony and one for the motiv
-    """
+    Given a midifile. this function creates a file with 2 tracks, one for the harmony and one for the motiv.
 
+    Args:
+        filename (str): pathname of the input midi file
+        output_folder (str): pathname of the output folder
+
+    """
 
     #load pypianoroll
     multitrack  = pypianoroll.read(filename)   
