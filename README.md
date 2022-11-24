@@ -1,4 +1,6 @@
-# Listening to Climate Change - Algorithm
+# Music Information Retrieval Tools 
+This tool has been used to extract meaningul information from existing musical pieces.
+This information has been used to compose new songs for the Listening to Climate Change concert produced by kling klang klong.
 
 
 ## 1. Setup
