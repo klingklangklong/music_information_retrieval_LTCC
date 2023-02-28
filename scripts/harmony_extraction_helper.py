@@ -416,10 +416,7 @@ def get_three_shifted_triad_list(triads_list, detected_harmony, expanded_main_no
 
     for shift in range(3):
         ordered_triads_list = order_triads(triads_list,
-                                           detected_harmony,
-                                           expanded_main_notes_list,
-                                           output_folder,
-                                           save_flag=False)
+                                           detected_harmony)
 
         ordered_triads_list = shift_first_triad(ordered_triads_list,
                                                 shift=shift)
